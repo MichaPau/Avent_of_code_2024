@@ -20,8 +20,6 @@ fn main() {
             if first_result == 1 {
                 first_result
             } else {
-                //let indexes = 0..report.len();
-
                 for i in 0..report.len() {
                     let mut temp_report = report.clone();
                     let _ = temp_report.remove(i);
@@ -29,7 +27,6 @@ fn main() {
                         return 1;
                     }
                 }
-
                 return 0;
             }
         })

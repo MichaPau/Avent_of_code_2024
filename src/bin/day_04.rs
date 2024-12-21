@@ -168,13 +168,7 @@ impl<T: Debug + PartialEq + Clone> Grid<T> {
             .filter_map(|(i, c)| {
                 if *c == values[0] {
                     let (x, y) = (i % self.width, (i as isize / self.width as isize).abs());
-                    let star = self.get_lines(
-                        Pos {
-                            x: x as isize,
-                            y: y as isize,
-                        },
-                        l as isize,
-                    );
+                    let star = self.get_lines(Pos { x: x as isize, y }, l as isize);
 
                     let r: Vec<Vec<_>> = star.into_iter().filter(|line| *line == values).collect();
                     Some(r)
@@ -200,8 +194,8 @@ fn main() {
     println!("{}, {}", w, h);
     let data: Vec<_> = lines
         .into_iter()
-        .map(|l| l.chars().collect::<Vec<char>>())
-        .flatten()
+        .flat_map(|l| l.chars().collect::<Vec<char>>())
+        //.flatten()
         .collect();
     // println!("{:?}", data);
     let g = Grid::new(w, h, data);

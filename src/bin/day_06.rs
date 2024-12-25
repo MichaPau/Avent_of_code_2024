@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs};
+use std::{collections::HashMap, fs, time::Instant};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
@@ -51,6 +51,7 @@ pub struct Grid {
     pub array: Vec<char>,
     pub width: usize,
     pub height: usize,
+    pub dir_map: HashMap<usize, Direction>,
 }
 
 impl Grid {
@@ -62,6 +63,7 @@ impl Grid {
             width: w,
             height: h,
             array: data,
+            dir_map: HashMap::new(),
         }
     }
 
@@ -157,6 +159,7 @@ impl Grid {
                     from.x = check_pos_at.x;
                     from.y = check_pos_at.y;
                     let index = self.get_index_from_pos(*from);
+                    self.dir_map.insert(index, dir.clone());
                     self.array[index] = 'X';
                 }
                 Some('#') => {
@@ -248,6 +251,7 @@ impl Grid {
     }
 }
 fn main() {
+    let start = Instant::now();
     //let input = fs::read_to_string("./data/input_test_6_1.txt").unwrap();
     let input = fs::read_to_string("./data/input6_1.txt").unwrap();
     let lines: Vec<&str> = input.lines().collect();
@@ -271,6 +275,7 @@ fn main() {
         let mut dir = init_dir.clone();
         let walker_index = g.get_index_from_pos(walker_pos);
         g.array[walker_index] = 'X';
+        g.dir_map.insert(walker_index, init_dir);
         let steps = g.walk(&mut walker_pos, &mut dir);
 
         //right answer: 4758
@@ -284,14 +289,18 @@ fn main() {
         let count = pos_obstacles
             .iter()
             .filter_map(|&i| {
+                // let mut walker_dir = g.dir_map.get(&i).unwrap().clone();
+                // let mut start_pos = g.get_pos_from_index(i);
+
                 let mut new_walker = Point {
                     x: init_walker_pos.x,
                     y: init_walker_pos.y,
                 };
                 let mut dir = init_dir.clone();
                 g.array[i] = 'O';
-
                 let w_r = g.obstacle_walk(&mut new_walker, &mut dir);
+
+                //let w_r = g.obstacle_walk(&mut start_pos, &mut walker_dir);
 
                 g.array[i] = 'X';
                 if w_r {
@@ -307,4 +316,6 @@ fn main() {
     } else {
         println!("walker not found");
     }
+
+    println!("Measure time: {:?}", start.elapsed().as_millis());
 }
